@@ -91,15 +91,17 @@ def subscribe_to_events():
               help='Runs KV app in server mode')
 @click.option('--serverip', '-i', default="0.0.0.0",
               help='Number of greetings.')
-@click.option('--serverport', '-p', default=4444,
+@click.option('--serverport', '-p', default=80,
               type=click.IntRange(1024, 49151), help='The person to greet.')
 @click.option('--get', '-G', default=None, help='Runs KV app in server mode')
 @click.option('--put', '-P', default=None, type=(str, str),
               help='Runs KV app in server mode')
 @click.option('--watch', '-W', default=False, is_flag=True,
               help='Runs KV app in server mode')
-def server_kv(server=False, serverip="0.0.0.0", serverport="4444", get=None,
-              put=None, watch=False, endpoint="http://localhost:4444"):
+@click.option('--endpoint', '-e', default="http://localhost",
+              help='Runs KV app in server mode')
+def server_kv(server=False, serverip="0.0.0.0", serverport="80", get=None,
+              put=None, watch=False, endpoint="http://localhost"):
     """sad."""
     if os.environ.get("KV_SERVER_IP") is not None:
         serverip = os.environ.get("KV_SERVER_IP")
