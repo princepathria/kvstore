@@ -1,5 +1,5 @@
 #!/usr/bin/python
-"""Key Value."""
+"""Simple key value store application"""
 import queue
 import logging
 import ipaddress
@@ -14,12 +14,13 @@ from flask.helpers import stream_with_context
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 
-# Initialize empty dataset
+# Initialize empty dataset for kv
 kvstore = dict()
 
 # Queue for event stream
 msg_queue = queue.Queue()
 
+# For /watch user count
 WATCHERS_COUNT = 0
 
 
