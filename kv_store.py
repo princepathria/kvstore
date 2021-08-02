@@ -92,7 +92,7 @@ def subscribe_to_events():
 @click.option('--serverip', '-i', default="0.0.0.0",
               help='Number of greetings.')
 @click.option('--serverport', '-p', default=80,
-              type=click.IntRange(1024, 49151), help='The person to greet.')
+              type=click.IntRange(80, 49151), help='The person to greet.')
 @click.option('--get', '-G', default=None, help='Runs KV app in server mode')
 @click.option('--put', '-P', default=None, type=(str, str),
               help='Runs KV app in server mode')
