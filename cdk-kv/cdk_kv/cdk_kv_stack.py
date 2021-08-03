@@ -28,7 +28,6 @@ class CdkKvStack(cdk.Stack):
         
         kv_repo = ecr.Repository(self, "kv-repo")
 
-
         kv_vpc = ec2.Vpc(self, "KvVpc", max_azs=3)
         
         kv_cluster = ecs.Cluster(self, "KvEcsCluster", vpc=kv_vpc)
@@ -38,10 +37,20 @@ class CdkKvStack(cdk.Stack):
             cpu=256,
             desired_count=1,
             assign_public_ip=True,
-            task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(image=ecs.ContainerImage.from_ecr_repository(kv_repo)),
+            task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
+                image=ecs.ContainerImage.from_registry("amazon/amazon-ecs-sample")),
             memory_limit_mib=512,
             public_load_balancer=True
             )
+        
+        kv_repo_policy = iam.PolicyStatement(actions=["ecr:BatchCheckLayerAvailability",
+                                     "ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer"],
+                            resources=[kv_repo.repository_arn])
+
+        kv_ecr_policy = iam.PolicyStatement(actions=["ecr:GetAuthorizationToken"], resources=["*"])
+
+        kv_ecsservice.service.task_definition.add_to_execution_role_policy(kv_repo_policy)
+        kv_ecsservice.service.task_definition.add_to_execution_role_policy(kv_ecr_policy)
 
         taskdef_arn = kv_ecsservice.task_definition.task_definition_arn
         
