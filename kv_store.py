@@ -139,7 +139,10 @@ def cli_get(key, endpoint):
 
 
 def cli_put(key, endpoint):
-    """Triggers /set on server and create a key or update value for existing key"""
+    """
+    Triggers /set on server and create a key
+    or update value for existing key
+    """
     key, value = key
     response = requests.put(f"{endpoint}/set",
                             data=json.dumps({key: value}))
