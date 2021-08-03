@@ -62,7 +62,7 @@ class CdkKvStack(cdk.Stack):
         build = codebuild.PipelineProject(self, "KVStore-build",
                                           environment=codebuild.BuildEnvironment(privileged=True,
                                           build_image=codebuild.LinuxBuildImage.AMAZON_LINUX_2_3,
-                                          environment_variables=build_variables)
+                                          environment_variables=build_variables), vpc=kv_vpc
                                           )
         build.role.add_managed_policy(policy=iam.ManagedPolicy.from_aws_managed_policy_name(
                                       managed_policy_name="AmazonEC2ContainerRegistryPowerUser"))
