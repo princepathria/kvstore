@@ -37,11 +37,12 @@ Once the virtualenv is activated, you can install the required dependencies.
 $ pip install -r requirements.txt
 ```
 Export the following shell variables
+[Create a GitHub token for poll](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 
 ```
 GITHUB_OWNER=princepathria
 GITHUB_REPO_NAME=kvstore
-GITHUB_TOKEN= [Create a GitHub token for poll](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+GITHUB_TOKEN=
 CDK_DEFAULT_ACCOUNT= AWS account for deployment
 CDK_DEFAULT_REGION= AWS region for deployment
 ```
