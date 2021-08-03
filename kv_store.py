@@ -66,11 +66,9 @@ def event_stream():
     try:
         while True:
             message = msg_queue.get()
-            print("aa gya watch me")
             print("yield test %s", message)
             yield "{}\n".format(message)
     except GeneratorExit:
-        print("bahr mu mai ab watch se")
         global WATCHERS_COUNT
         WATCHERS_COUNT -= 1
         print("on exit", WATCHERS_COUNT)
