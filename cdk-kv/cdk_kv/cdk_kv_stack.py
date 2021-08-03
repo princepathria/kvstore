@@ -25,22 +25,25 @@ class CdkKvStack(cdk.Stack):
         gh_repo_name = os.environ.get("GITHUB_REPO_NAME")
         account_id = os.getenv('CDK_DEFAULT_ACCOUNT')
         region = os.getenv('CDK_DEFAULT_REGION')
-
-        kv_vpc = ec2.Vpc(self, "KvVpc", max_azs=3)
-
-        self.kv_cluster = ecs.Cluster(self, "KvEcsCluster", vpc=kv_vpc)
-
+        
         kv_repo = ecr.Repository(self, "kv-repo")
 
-        self.kv_ecstaskdef = ecs.FargateTaskDefinition(self, "KVTaskDefinition")
-        kv_container = self.kv_ecstaskdef.add_container(id="web", image=ecs.ContainerImage.from_ecr_repository(kv_repo))
-        kv_container.add_port_mappings(ecs.PortMapping(container_port=80, host_port=80))
 
+        kv_vpc = ec2.Vpc(self, "KvVpc", max_azs=3)
         
+        kv_cluster = ecs.Cluster(self, "KvEcsCluster", vpc=kv_vpc)
         
-        #ecs.FargateServiceAttributes(service_name=kv_ecsservice.service)
-        #kv_ecsservice
-        taskdef_arn = self.kv_ecstaskdef.task_definition_arn
+        kv_ecsservice = ecs_patterns.ApplicationLoadBalancedFargateService(self, "KVappFargateService",
+            cluster=kv_cluster,            
+            cpu=256,
+            desired_count=1,
+            assign_public_ip=True,
+            task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(image=ecs.ContainerImage.from_ecr_repository(kv_repo)),
+            memory_limit_mib=512,
+            public_load_balancer=True
+            )
+
+        taskdef_arn = kv_ecsservice.task_definition.task_definition_arn
         
 
         build_variables = {
@@ -53,18 +56,19 @@ class CdkKvStack(cdk.Stack):
         }
 
         source_artifact = codepipeline.Artifact()
-        self.build_artifact = codepipeline.Artifact()
+        
+        build_artifact = codepipeline.Artifact()
 
         build = codebuild.PipelineProject(self, "KVStore-build",
                                           environment=codebuild.BuildEnvironment(privileged=True,
                                           build_image=codebuild.LinuxBuildImage.AMAZON_LINUX_2_3,
-                                          environment_variables=build_variables),
-                                          vpc=kv_vpc)
+                                          environment_variables=build_variables)
+                                          )
         build.role.add_managed_policy(policy=iam.ManagedPolicy.from_aws_managed_policy_name(
                                       managed_policy_name="AmazonEC2ContainerRegistryPowerUser"))
 
         
-        self.kv_pipleine = codepipeline.Pipeline(self, "KVPipeline", pipeline_name="KVstorePipeline", restart_execution_on_update=True, 
+        kv_pipleine = codepipeline.Pipeline(self, "KVPipeline", pipeline_name="KVstorePipeline", restart_execution_on_update=True, 
                               stages=[
                                 {
                                     "stageName": "Source",
@@ -86,35 +90,16 @@ class CdkKvStack(cdk.Stack):
                                         action_name="TestBuild-action",
                                         project=build,
                                         input=source_artifact,
-                                        outputs=[self.build_artifact]
+                                        outputs=[build_artifact]
                                     )]
-                                }
-                              ])
-
-        
-"""         kv_ecsservice = ecs_patterns.ApplicationLoadBalancedFargateService(self, "KVappFargateService",
-            cluster=kv_cluster,            
-            cpu=256,
-            desired_count=1,
-            assign_public_ip=True,
-            #task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(image=ecs.ContainerImage.from_ecr_repository(kv_repo)),
-            memory_limit_mib=512,
-            public_load_balancer=True,
-            task_definition=kv_ecstaskdef,
-            circuit_breaker=ecs.DeploymentCircuitBreaker(rollback=True))
-
-        kv_ecsservice.node.add_dependency(kv_pipleine)
-
-        
-        kv_deploy_action = codepipeline_actions.EcsDeployAction(
+                                },
+                                {
+                                    "stageName": "Deploy",
+                                    "actions": [codepipeline_actions.EcsDeployAction(
                                             action_name="ECS-Deploy",
                                             input=build_artifact,
                                             service=kv_ecsservice.service,
                                             deployment_timeout=cdk.Duration.minutes(20)
-                            )
-        
-        
-        kv_pipleine.add_stage(
-            stage_name = "Deploy",
-            actions= [kv_deploy_action]
-        ) """
+                                            )]
+                                }
+                              ])

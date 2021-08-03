@@ -10,7 +10,6 @@ from aws_cdk import core as cdk
 from aws_cdk import core
 
 from cdk_kv.cdk_kv_stack import CdkKvStack
-from cdk_kv.cdk_kv_pipeline_stack import CdkKvPipelineStack
 
 
 app = core.App()
@@ -31,9 +30,5 @@ infra_stack = CdkKvStack(app, "CdkKvStack",
 
     # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
     )
-    
-pipeline_stack = CdkKvPipelineStack(infra_stack, 'Pipeline', kv_ecstaskdef=infra_stack.kv_ecstaskdef, 
-                                    kv_pipleine=infra_stack.kv_pipleine, kv_cluster=infra_stack.kv_cluster,
-                                    build_artifact=infra_stack.build_artifact)
 
 app.synth()
