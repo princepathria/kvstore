@@ -70,7 +70,7 @@ Updated key  - a
 
 ## AWS Deployment
 
-* [CDK Deployment docs](https://github.com/princepathria/kvstore/cdk-kv) 
+* [CDK Deployment docs](cdk-kv) 
 
 ## License
 
