@@ -66,12 +66,12 @@ def event_stream():
     try:
         while True:
             message = msg_queue.get()
-            print("yield test %s", message)
+            print("yield test %s", message, flush=True)
             yield "{}\n".format(message)
     except GeneratorExit:
         global WATCHERS_COUNT
         WATCHERS_COUNT -= 1
-        print("on exit", WATCHERS_COUNT)
+        print("on exit", WATCHERS_COUNT, flush=True)
 
 
 @app.route("/watch")
@@ -80,7 +80,7 @@ def subscribe_to_events():
     app.logger.info("Event consumer initialized.")
     global WATCHERS_COUNT
     WATCHERS_COUNT += 1
-    print("on entry", WATCHERS_COUNT)
+    print("on entry", WATCHERS_COUNT, flush=True)
     return Response(stream_with_context(event_stream()),
                     mimetype="text/event-stream")
 
@@ -90,17 +90,17 @@ def subscribe_to_events():
               help='Runs KV app in server mode')
 @click.option('--serverip', '-i', default="0.0.0.0",
               help='Listen server IP [default: 0.0.0.0]')
-@click.option('--serverport', '-p', default=80,
-              type=click.IntRange(80, 49151), help='Listen port [default: 80]')
+@click.option('--serverport', '-p', default=8080,
+              type=click.IntRange(80, 49151), help='Listen port [default: 8080]')
 @click.option('--get', '-G', default=None, help='Gets key from server')
 @click.option('--put', '-P', default=None, type=(str, str),
               help='Stores key to server')
 @click.option('--watch', '-W', default=False, is_flag=True,
               help='Watch for key changes')
-@click.option('--endpoint', '-e', default="http://localhost",
-              help='Server endpoint [default: http://localhost]')
-def server_kv(server=False, serverip="0.0.0.0", serverport="80", get=None,
-              put=None, watch=False, endpoint="http://localhost"):
+@click.option('--endpoint', '-e', default="http://localhost:8080",
+              help='Server endpoint [default: http://localhost:8080]')
+def server_kv(server=False, serverip="0.0.0.0", serverport="8080", get=None,
+              put=None, watch=False, endpoint="http://localhost:8080"):
     """Simple Key/Value Store"""
     if os.environ.get("KV_SERVER_IP") is not None:
         serverip = os.environ.get("KV_SERVER_IP")
@@ -155,7 +155,7 @@ def cli_watch(endpoint):
         for data in response.iter_content(decode_unicode=True):
             word.append(data)
             if data == '\n':
-                print(''.join(word))
+                print(''.join(word), flush=True)
                 word.clear()
 
 
