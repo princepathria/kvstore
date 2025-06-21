@@ -1,5 +1,4 @@
--e .
-attrs==20.3.0
+attrs==25.3.0
 aws-cdk.assets==1.116.0
 aws-cdk.aws-apigateway==1.116.0
 aws-cdk.aws-applicationautoscaling==1.116.0
@@ -54,10 +53,29 @@ aws-cdk.custom-resources==1.116.0
 aws-cdk.cx-api==1.116.0
 aws-cdk.pipelines==1.116.0
 aws-cdk.region-info==1.116.0
-cattrs==1.6.0
+blinker==1.9.0
+cattrs==24.1.3
+-e git+https://github.com/princepathria/kvstore@6e055f16c4dd58c016bfc22a3c1cada7a3f4ec3a#egg=cdk_kv&subdirectory=cdk-kv
+certifi==2025.6.15
+charset-normalizer==3.4.2
+click==8.2.1
 constructs==3.3.110
-jsii==1.32.0
+flake8==7.3.0
+Flask==3.1.1
+idna==3.10
+importlib_resources==6.5.2
+itsdangerous==2.2.0
+Jinja2==3.1.6
+jsii==1.112.0
+MarkupSafe==3.0.2
+mccabe==0.7.0
 publication==0.0.3
+pycodestyle==2.14.0
+pyflakes==3.4.0
 python-dateutil==2.8.2
+requests==2.32.4
 six==1.16.0
-typing-extensions==3.10.0.0
+typeguard==4.4.4
+typing_extensions==4.14.0
+urllib3==2.5.0
+Werkzeug==3.1.3
